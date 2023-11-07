@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+speedtest = "*"
+# slack-webhook = "*"
+slack-sdk = "*"
+simplejson = "*"
+inotify = "*"
+pathlib = "*"
+selenium = "*"
+requests = "*"
+
+[dev-packages]
+pylint = "*"
+ipython = "*"
+
+[requires]
+python_version = "3"

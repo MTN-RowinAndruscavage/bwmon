@@ -1,0 +1,15 @@
+[Unit]
+Description=Envmon to Slack notification
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/home/techexops/bwmon/notify/envmon_2_slack.sh -D
+ExecStop=/home/techexops/bwmon/notify/envmon_2_slack.sh -Q
+Restart=on-failure
+User=techexops
+Group=techexops
+
+[Install]
+WantedBy=default.target
+
