@@ -2,6 +2,10 @@
 Checks and utilities to monitor hourly speedtest-cli and per minute ICMP internet connectivity using CheckMK
 https://checkmk.com/
 
+
+![CheckMK Dashboard Screenshot](https://github.com/MTN-RowinAndruscavage/bwmon/assets/8740187/da9e3b7d-7f73-426c-bdc5-c68a50fc5c04)
+
+
 This is tested and intended to run on Ubuntu 20.04 systems, but should work on others.
 
 There are several parts:
