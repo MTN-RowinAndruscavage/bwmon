@@ -3,6 +3,9 @@
 Environmental monitor sensors for the Pico W in the DeskPi PicoMate harness
 https://deskpi.com/collections/deskpi-picomate
 
+![DeskPi PicoMate](https://github.com/MTN-RowinAndruscavage/bwmon/assets/8740187/887477a3-32ae-432a-8a20-9ee0df23287e)
+
+
 This will serve the status of the temperature / humidity sensor, ambient audio levels from the microphone, and motion sensor via HTTP or MQTT
 Also displays readings on the OLED panel.
 
