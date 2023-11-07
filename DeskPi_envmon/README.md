@@ -1,0 +1,46 @@
+# DeskPi PicoMate Code
+
+Environmental monitor sensors for the Pico W in the DeskPi PicoMate harness
+https://deskpi.com/collections/deskpi-picomate
+
+This will serve the status of the temperature / humidity sensor, ambient audio levels from the microphone, and motion sensor via HTTP or MQTT
+Also displays readings on the OLED panel.
+
+Due to memory constraints, it will only load either the HTTP or MQTT module.
+
+## Installation
+This was tested with CircuitPython 8.2.6 .  After flashing CircuitPython, copy all the .py and the settings.toml to the Pico W storage.
+
+Create a lib/ directory and copy the following files and directories into it from the CircuitPython library bundle
+https://circuitpython.org/libraries
+
+    adafruit_framebuf.mpy
+    adafruit_httpserver
+    adafruit_minimqtt
+    adafruit_register
+    adafruit_requests.mpy
+    adafruit_sht31d.mpy
+    adafruit_ssd1306.mpy
+    neopixel.mpy
+
+Also drop in the font5x8.bin from:
+https://github.com/adafruit/Adafruit_CircuitPython_framebuf/blob/main/examples/font5x8.bin
+
+    font5x8.bin
+
+## Configuration
+
+Edit the settings.toml with your wifi credentials.
+
+If you enable MQTT, HTTP will be disabled.  If you need to connect to an unencrypted mqtt server, you will also need to edit the net_mqtt.py code to remove the ssl lines:
+
+        # Delete the following lines to connect to an unsecured MQTT server
+        is_ssl=True,
+        ssl_context=ssl.create_default_context(),
+
+## Reset button
+
+It's optional but recommended to wire up a button between pins 30 (RST) and 38 (GND) so you don't have to yank the power to reboot this.
+
+The PicoMate button on top left will trigger a graceful shutdown which disconnects from MQTT / HTTP sessions, but is otherwise quite useless.
+
