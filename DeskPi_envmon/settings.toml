@@ -1,0 +1,13 @@
+CIRCUITPY_WIFI_SSID = ""
+CIRCUITPY_WIFI_PASSWORD = ""
+
+CIRCUITPY_WEB_API_PASSWORD = ""
+CIRCUITPY_WEB_API_PORT = "8080"
+
+## Uncomment to add an MQTT broker.  This will disable the web server due to memory constraints
+# mqtt_broker=""
+# mqtt_port=8883
+# mqtt_username=""
+# mqtt_password=""
+# mqtt_topic="sensor/location"
+
