@@ -47,3 +47,28 @@ It's optional but recommended to wire up a button between pins 30 (RST) and 38 (
 
 The PicoMate button on top left will trigger a graceful shutdown which disconnects from MQTT / HTTP sessions, but is otherwise quite useless.
 
+# Future work
+
+* Set up motion sensor to report movements detected per minute, so the monitor doesn't have to catch the movement at the right moment.
+
+* Set up alert thresholds
+
+* Output directly in CheckMK host format so it doesn't need a companion plugin to run on a separate host
+
+* Add accelerometer & magnetometer monitoring so we can detect earthquakes and EMP events in our data centers
+
+* Do something with the dial button, like changing the font or adjusting alert thresholds.
+
+# Sources
+
+This was pieced together from several other projects and samples:
+
+Sensor readings for DeskPi PicoMate from
+https://deskpi.com/blogs/learn/deskpi-picomate-user-manual-and-sources
+
+Network server from
+https://learn.adafruit.com/pico-w-http-server-with-circuitpython/code-the-pico-w-http-server
+
+Ported from micropython to adafruit circuitpython
+From https://github.com/Braiuz/RaspberryPiPico_WeatherStation/tree/main
+
