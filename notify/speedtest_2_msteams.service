@@ -1,0 +1,15 @@
+[Unit]
+Description=Speedtest to Slack notification
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/home/te5ghub/bwmon/notify/speedtest_2_msteams.sh -D
+ExecStop=/home/te5ghub/bwmon/notify/speedtest_2_msteams.sh -Q
+Restart=on-failure
+User=te5ghub
+Group=te5ghub
+
+[Install]
+WantedBy=default.target
+
