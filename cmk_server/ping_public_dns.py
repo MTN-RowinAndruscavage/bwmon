@@ -12,7 +12,7 @@ def check_ping_public_dns(section):
 
 register.check_plugin(
   name=“ping_public_dns”,
-  service_name=“Ping public dns (8.8.8.8)”,
+  service_name=“Ping public dns (1.1.1.1)”,
   discovery_function=discover_ping_public_dns,
   check_function=check_ping_public_dns,
 )

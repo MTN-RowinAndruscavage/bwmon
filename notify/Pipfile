@@ -12,6 +12,7 @@ inotify = "*"
 pathlib = "*"
 selenium = "*"
 requests = "*"
+pymsteams = "*"
 
 [dev-packages]
 pylint = "*"

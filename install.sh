@@ -13,7 +13,7 @@ libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-d
 # sudo curl https://pyenv.run | bash
 # # TODO: Set up .bashrc
 
-# Install slack notification script
+# Install slack/msteams notification script
 pushd notify
 python3 -m pip install -U pipenv
 pipenv install
@@ -46,10 +46,17 @@ sudo rm /usr/lib/check_mk_agent/plugins/mtr.py
 sudo chmod 644 /usr/lib/check_mk_agent/plugins/speedtest_failed.json
 sudo cp mtr.cfg /etc/check_mk/
 
-sudo cp notify/speedtest_2_slack.service /etc/systemd/system/
-sudo systemctl status speedtest_2_slack \
-	|| sudo systemctl enable speedtest_2_slack \
-	; sudo systemctl start speedtest_2_slack
+
+NOTIFICATIONS=(
+  slack
+  msteams
+)
+
+for NOTIFICATION in ${NOTIFICATIONS[@]} ; do
+sudo cp notify/speedtest_2_${NOTIFICATION}.service /etc/systemd/system/
+sudo systemctl status speedtest_2_${NOTIFICATION} \
+	|| sudo systemctl enable speedtest_2_${NOTIFICATION} \
+	; sudo systemctl start speedtest_2_${NOTIFICATION}
 
 
 echo "

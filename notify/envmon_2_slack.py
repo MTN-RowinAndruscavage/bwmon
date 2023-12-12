@@ -73,7 +73,7 @@ def _main():
         for s in sensors:
             try:
                 slackNotification(readData(s['name'], s['ip']))
-            except e:
+            except Exception as e:
                 print(f"Error polling {s['name']}: {str(e)}")
         time.sleep(3600)
 

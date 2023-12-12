@@ -4,6 +4,8 @@
 FORCE="${FORCE:=false}"
 # echo "FORCE = ${FORCE}"
 
+SPEEDTEST_OPTS="-s 12192"  # Nitel server
+
 # This path can be changed as required
 data_filepath="/usr/lib/check_mk_agent/plugins/speedtest_data.json"
 
@@ -23,6 +25,7 @@ fi
 
 if [ "$start_speedtest" = true ] || [ "$FORCE" = true ]; then
     speedtest --accept-license --accept-gdpr -f json \
+	$SPEEDTEST_OPTS \
 	> $data_filepath \
 	|| cp $failed_datafile $data_filepath
 fi
