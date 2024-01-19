@@ -3,7 +3,10 @@
 # Output readings from Pico W DeskPi PicoMate sensors in the check_mk local format:
 # 0 temperature=70.0;60;80;32;110|humidity=48.5;30;70;0;100|motion=1;;;;|microphone=80;1000;2000;0; OK - Temp 70.0 F Humidity 48.5 %
 
+# Customize and install this script in /usr/lib/check_mk_agent/plugins/  on one host monitored by check_mk
+# The environmental sensors will appear as a custom check on that host
 
+# Can create multiple copies of this script with different settings for each sensor
 CHECKNAME="Env Sensor 1"
 SENSORIP="192.168.0.3"
 
@@ -19,6 +22,8 @@ temperature=0;20;35;0;50\
 |humidity=0;30;70;0;100\
 |microphone=0;1000;2000;0;\
  ${SUMMARY}"
+
+# TODO: WARN and CRIT when thresholds are exceeded
 
 else
     # Parse and output metrics for checkmk
