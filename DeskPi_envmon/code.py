@@ -10,7 +10,7 @@
 import os, microcontroller, board, busio
 import time
 import gc
-
+import asyncio
 
 # Can't find this optical sensor driver
 # from adafruit_ltr381rgb import LTR381RGB
@@ -18,11 +18,21 @@ from mic import *
 
 from sensor_data import *
 
-# There's only enough memory to run one or the other
+# There's only enough memory to run HTTP or MQTT
 if os.getenv('mqtt_broker'):
     from net_mqtt import *
-else:    
+else:
     from net_httpserver import *
+
+# Optionally run checkmk agent
+if os.getenv('CHECKMK_PORT'):
+    from net_socket import *
+
+# Sensors and Display need to be loaded after MQTT
+# Temperature sensor
+from adafruit_sht31d import SHT31D
+# OLED
+from adafruit_ssd1306 import SSD1306_I2C
 
 import digitalio
 led = digitalio.DigitalInOut(board.LED)
@@ -55,7 +65,7 @@ def Restart():
     display.fill(0)
     display.show()
     microcontroller.reset()
-            
+
 def Sensor_Init():
     i2cl = busio.I2C(scl = board.GP15, sda = board.GP14)
     sensor = SHT31D(i2cl)
@@ -69,27 +79,25 @@ def Display_Init():
     print("Display init done")
     return display
 
+async def Sensor_Heat(sensor):
+    # Burn off condensation from humidity sensor about every 10 sec
+    sensor.heater = True
+    print("Sensor Heater status =", sensor.heater)
+    time.sleep(1)
+    sensor.heater = False
+    print("Sensor Heater status =", sensor.heater)
+    await asyncio.sleep(100)
 
-
-
-# something global in these 2 sensors conflicts with mqtt (!)
-from adafruit_sht31d import SHT31D
-from adafruit_ssd1306 import SSD1306_I2C
-
-def Sensor_Get(sensor, display):
-    global led, server, mqtt_client, sdata
-    loopcount = 100  # trigger sensor heater on first iteration
-    while(True):
+async def Service_Loop():
+    while True:
         if not (wifi.radio.ipv4_address is None):
             net_loop()
-            gc.collect()
-        loopcount += 1
-        time.sleep(0.1)
-        # update network at 10Hz, update sensor / display at ~1Hz
-        if not (loopcount % 10):
-            next
-    
-        Blink(1) # 0.2 sec blink indicates start of data acquisition
+        await asyncio.sleep(0)
+
+async def Sensor_Get(sensor, display):
+    global led, server, mqtt_client, sdata
+    while(True):
+        await Blink(1) # 0.2 sec blink indicates start of data acquisition
         if not button.value:  # Button triggers restart routine
             Restart()
         # update sensor data
@@ -97,61 +105,62 @@ def Sensor_Get(sensor, display):
             sdata['temperature'] = sensor.temperature
             sdata['humidity'] = sensor.relative_humidity
             sdata['motion'] = pir.value
-            sdata['microphone'] = getAudioLevel()                  
+            sdata['motion_per_minute'].insert(sdata['motion'])
+            sdata['microphone'] = getAudioLevel()
             # sdata['light'] = optical.lux
-            
+
         except Exception as e:
             print("Exception " + str(e) + " during sensor data acquisition")
-            
+
         # Output readings
-        print(f"Temperature = {(sdata['temperature'] * 1.8 + 32):.1f}°F "
-              + f"Humidity = {sdata['humidity']:.1f}% Microphone = {sdata['microphone']}")
+        print(f"Temp={(sdata['temperature']):.1f}°C "
+              + f"Hum={sdata['humidity']:.1f}% "
+              + f"Mic={sdata['microphone']:.0f} "
+              + f"Mot={sdata['motion_per_minute'].sum():.0f} "
+              + f"Mem={gc.mem_free()/1024:.0f} kB")
         # print(f"Motion = {pir.value}")
         # print(f"Optical = {sdata['light']} lux")
-        
+
         display.fill(0)
         display_text(display, f"Temperature = {(sdata['temperature'] * 1.8 + 32):.1f} F", 0)
         display_text(display, f"Humidity    = {sdata['humidity']:.1f}%", 1)
-        display_text(display, f"Motion = {sdata['motion']}", 3)
+        display_text(display, f"Motion = {sdata['motion_per_minute'].sum()} /min", 3)
         display_text(display, f"Audio  = {sdata['microphone']:4.1f}", 4)
-        
+
         # display_text(display, f"mem_free  = {gc.mem_free() / 1024:.0f}kB", 6)
         if not (wifi.radio.ipv4_address is None):
             display_text(display, f"IP: {wifi.radio.ipv4_address}", 7)
         display.show()
+        net_update() # push mqtt data
 
-
-        net_update()
-
-        # Burn off condensation from humidity sensor about every 10 sec
-        if loopcount > 100:
-            loopcount = 0
-            sensor.heater = True
-            print("Sensor Heater status =", sensor.heater)
-            time.sleep(1)
-            sensor.heater = False
-            print("Sensor Heater status =", sensor.heater)
-            
-            
         #print(f"mem_free: {gc.mem_free() / 1024:.0f}kB")
         gc.collect()
         #print("GC mem_free: %.0fkB" % gc.mem_free() / 1024)
+        await asyncio.sleep(0.8)
 
-            
-def Blink(n):
+async def Blink(n):
     for x in range(n):
         led.value = not led.value
-        time.sleep(0.1)
+        await asyncio.sleep(0.1)
         led.value = not led.value
-        time.sleep(0.1)
+        await asyncio.sleep(0.1)
+
+async def main():
+    tasks = []
+    tasks.append(asyncio.create_task(Sensor_Get(sensor, display)))
+    tasks.append(asyncio.create_task(Sensor_Heat(sensor)))
+    tasks.append(asyncio.create_task(Service_Loop()))
+    if os.getenv('CHECKMK_PORT'):
+        tasks.append(asyncio.create_task(tcpserver(PORT)))
+
+    await asyncio.gather(*tasks)
 
 if __name__ =='__main__':
-    time.sleep(1)
     try:
         display = Display_Init()
         sensor = Sensor_Init()
-        Sensor_Get(sensor, display)
-        
     except Exception as e:
-        print("Exception " + str(e) + " during sensor data acquisition");
+        print("Exception " + str(e) + " during device initialization");
         StopApplication()
+
+    asyncio.run(main())
