@@ -46,8 +46,8 @@ if internet_connected and os.getenv('mqtt_broker'):
         username=os.getenv('mqtt_username'),
         password=os.getenv('mqtt_password'),
         socket_pool=pool,
-        is_ssl=True,
-        ssl_context=ssl.create_default_context(),
+        is_ssl=False,
+        #ssl_context=ssl.create_default_context(),
     )
 
     # Connect callback handlers to mqtt_client
@@ -80,17 +80,17 @@ def net_loop():
         mqtt_client.loop()
     except Exception as e:
         print("MQTT_loop Exception: " + str(e))
-        
+
 def net_update():
     mqtt_client.publish(mqtt_topic, jsondump())
-        
+
 def mqtt_close():
     print("Unsubscribing from %s" % mqtt_topic)
     try:
         mqtt_client.unsubscribe(mqtt_topic)
     except Exception as e:
         print("MQTT Unsubscribe Exception" + str(e))
-        
+
     print("Disconnecting from %s" % mqtt_client.broker)
     try:
         mqtt_client.disconnect()
