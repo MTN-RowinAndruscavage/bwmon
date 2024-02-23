@@ -53,11 +53,11 @@ NOTIFICATIONS=(
 )
 
 for NOTIFICATION in ${NOTIFICATIONS[@]} ; do
-sudo cp notify/speedtest_2_${NOTIFICATION}.service /etc/systemd/system/
-sudo systemctl status speedtest_2_${NOTIFICATION} \
+  sudo cp notify/speedtest_2_${NOTIFICATION}.service /etc/systemd/system/
+  sudo systemctl status speedtest_2_${NOTIFICATION} \
 	|| sudo systemctl enable speedtest_2_${NOTIFICATION} \
 	; sudo systemctl start speedtest_2_${NOTIFICATION}
-
+done
 
 echo "
 sudo cmk-agent-ctl register -i te5ghub -s 192.168.0.2 -U cmkadmin --trust-cert --hostname $HOSTNAME
