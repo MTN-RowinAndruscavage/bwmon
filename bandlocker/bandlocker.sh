@@ -16,6 +16,7 @@ NAVMENU=(
 )
 
 NAVMENUBACK=(
+    DPAD_UP
     MOVE_HOME
     DPAD_UP
     ENTER
@@ -48,7 +49,7 @@ adb shell input keyevent HOME
 sleep 0.5
 
 # Bring up Samsung engineering mode
-adb shell service call phone 1 s16 "*#2263#"
+adb shell service call phone 1 s16 '*#2263#'
 sleep 0.5
 
 for OPTION in ${OPTIONS[@]} ; do
