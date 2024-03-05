@@ -30,7 +30,11 @@ def readData(filename):
             print(json.dumps(sd, sort_keys=True, indent=2 * ' '))
     except Exception as e:
         print(f"Error loading json: {e}")
+<<<<<<< HEAD
         return "Failed to parse json: {e}"
+=======
+	return "Failed to parse json: {e}"
+>>>>>>> e3aa0669a177634d9900b5e5597fc7331c1167ee
 
     url=''
     if 'url' in sd['result']:
