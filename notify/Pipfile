@@ -13,6 +13,7 @@ pathlib = "*"
 selenium = "*"
 requests = "*"
 pymsteams = "*"
+azure-storage-blob = "*"
 
 [dev-packages]
 pylint = "*"
