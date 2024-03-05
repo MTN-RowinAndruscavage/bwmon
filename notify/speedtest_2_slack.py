@@ -23,10 +23,14 @@ def readData(filename):
         with open(filename) as json_data:
             sd = json.load(json_data)
 
+        if 'result' not in sd:
+            payload="Oops"
+
         if debug:
             print(json.dumps(sd, sort_keys=True, indent=2 * ' '))
     except Exception as e:
         print(f"Error loading json: {e}")
+	return "Failed to parse json: {e}"
 
     url=''
     if 'url' in sd['result']:
