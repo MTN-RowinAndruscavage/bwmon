@@ -12,29 +12,20 @@ slack_webhook = os.environ.get('SLACK_WEBHOOK')
 sendNotification = os.environ.get('SEND') or True
 debug = os.environ.get('DEBUG') or False
 openBrowser = os.environ.get('OPENBROWSER') or True
+geckodriver_path = "/snap/bin/geckodriver"
+driver_service = webdriver.FirefoxService(executable_path=geckodriver_path)
 speedtest_file = "/usr/lib/check_mk_agent/plugins/speedtest_data.json"
 
 if openBrowser:
-    browser=webdriver.Firefox()
+    browser=webdriver.Firefox(service=driver_service)
 
 def readData(filename):
     global debug, network, openBrowser, browser
-    try:
-        with open(filename) as json_data:
-            sd = json.load(json_data)
+    with open(filename) as json_data:
+        sd = json.load(json_data)
 
-        if 'result' not in sd:
-            payload="Oops"
-
-        if debug:
-            print(json.dumps(sd, sort_keys=True, indent=2 * ' '))
-    except Exception as e:
-        print(f"Error loading json: {e}")
-<<<<<<< HEAD
-        return "Failed to parse json: {e}"
-=======
-	return "Failed to parse json: {e}"
->>>>>>> e3aa0669a177634d9900b5e5597fc7331c1167ee
+    if debug:
+        print(json.dumps(sd, sort_keys=True, indent=2 * ' '))
 
     url=''
     if 'url' in sd['result']:
@@ -59,7 +50,7 @@ JITTER {sd['ping']['jitter']:.{0}f}"
         # webbrowser.open(sd['result']['url'], new=0)
         try:
             browser.get(sd['result']['url'])
-        except Exception as e:
+        except(e):
             print(e)
 
     return payload
