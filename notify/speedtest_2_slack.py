@@ -12,10 +12,12 @@ slack_webhook = os.environ.get('SLACK_WEBHOOK')
 sendNotification = os.environ.get('SEND') or True
 debug = os.environ.get('DEBUG') or False
 openBrowser = os.environ.get('OPENBROWSER') or True
+geckodriver_path = "/snap/bin/geckodriver"
+driver_service = webdriver.FirefoxService(executable_path=geckodriver_path)
 speedtest_file = "/usr/lib/check_mk_agent/plugins/speedtest_data.json"
 
 if openBrowser:
-    browser=webdriver.Firefox()
+    browser=webdriver.Firefox(service=driver_service)
 
 def readData(filename):
     global debug, network, openBrowser, browser

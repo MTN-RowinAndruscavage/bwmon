@@ -43,15 +43,16 @@ def upload_blob_file(imagefile, blob_service_client: BlobServiceClient, containe
     return blob_client.url
 
 
-def msTeamsNotification(image_url):
+def msTeamsNotification(name, image_url):
     """Post to MS Teams webhook"""
     global msteams_webhook
     msTeamsMsg = pymsteams.connectorcard(msteams_webhook)
     msgSection = pymsteams.cardsection()
     msgSection.addImage(image_url, ititle="Azure Blob")
+    msTeamsMsg.summary('PNG Attachment')
+    msTeamsMsg.text(f'[{name}]({image_url})')
     msTeamsMsg.addSection(msgSection)
-    msTeamsMsg.title('Screenshot')
-    msTeamsMsg.text('PNG File')
+
     try:
         msTeamsMsg.send()
         assert msTeamsMsg.last_http_response.status_code == 200
@@ -65,7 +66,7 @@ def _main():
     for imagefile in sys.argv[1:]:
         url = upload_blob_file(imagefile, blob_service_client, container_name)
         print(url)
-        msTeamsNotification(url)
+        msTeamsNotification(os.path.basename(imagefile), url)
 
     # i = inotify.adapters.Inotify()
 
