@@ -2,6 +2,9 @@
 
 from slack_sdk.webhook import WebhookClient
 from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
+from webdriver_manager.firefox import GeckoDriverManager
+
 import os, datetime
 from pathlib import Path
 import inotify.adapters
@@ -12,20 +15,27 @@ slack_webhook = os.environ.get('SLACK_WEBHOOK')
 sendNotification = os.environ.get('SEND') or True
 debug = os.environ.get('DEBUG') or False
 openBrowser = os.environ.get('OPENBROWSER') or True
-geckodriver_path = "/snap/bin/geckodriver"
-driver_service = webdriver.FirefoxService(executable_path=geckodriver_path)
+# geckodriver_path = "/snap/bin/geckodriver"
+# driver_service = webdriver.FirefoxService(executable_path=geckodriver_path)
 speedtest_file = "/usr/lib/check_mk_agent/plugins/speedtest_data.json"
 
 if openBrowser:
-    browser=webdriver.Firefox(service=driver_service)
+    # browser=webdriver.Firefox(service=driver_service)
+    browser=webdriver.Firefox(service=Service(GeckoDriverManager().install()))
 
 def readData(filename):
     global debug, network, openBrowser, browser
     with open(filename) as json_data:
         sd = json.load(json_data)
 
-    if debug:
-        print(json.dumps(sd, sort_keys=True, indent=2 * ' '))
+        if 'result' not in sd:
+            payload="Oops"
+
+        if debug:
+            print(json.dumps(sd, sort_keys=True, indent=2 * ' '))
+    except Exception as e:
+        print(f"Error loading json: {e}")
+        return f"Failed to parse json: {e}"
 
     url=''
     if 'url' in sd['result']:

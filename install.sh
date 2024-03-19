@@ -3,6 +3,13 @@
 # For ubuntu clients
 # Rowin.Andruscavage1@T-Mobile.com   2023-09-26
 
+if [[ -x /snap/bin/firefox ]]; then
+  echo "Firefox installed from snap doesn't work with selenium in Ubuntu 22.04 + XWayland"
+  echo "Install the APT package of Firefox per:"
+  echo "https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04"
+  exit 1
+fi
+
 sudo apt update; sudo apt install -y jq apcalc curl monitoring-plugins \
                       atop iftop glances
 
