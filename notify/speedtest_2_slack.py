@@ -25,8 +25,9 @@ if openBrowser:
 
 def readData(filename):
     global debug, network, openBrowser, browser
-    with open(filename) as json_data:
-        sd = json.load(json_data)
+    try:
+        with open(filename) as json_data:
+            sd = json.load(json_data)
 
         if 'result' not in sd:
             payload="Oops"
@@ -60,7 +61,7 @@ JITTER {sd['ping']['jitter']:.{0}f}"
         # webbrowser.open(sd['result']['url'], new=0)
         try:
             browser.get(sd['result']['url'])
-        except(e):
+        except Exception as e:
             print(e)
 
     return payload
