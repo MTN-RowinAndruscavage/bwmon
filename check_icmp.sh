@@ -6,7 +6,7 @@
 # And convert to the Check_MK local check format, converting milliseconds to seconds
 # 0 "Ping DNS" rta=0.025134;0.200;0.500;0;|pl=0;40;80;;|rtmax=0.040309;;;;|rtmin=0.019837;;;; OK - 8.8.8.8: rta 25.134ms, lost 0%
 
-CHECKICMP=$(/usr/lib/nagios/plugins/check_icmp 1.1.1.1)
+CHECKICMP=$(/usr/lib/nagios/plugins/check_icmp 8.8.8.8)
 
 IFS='|' read -ra ADDR <<< "$CHECKICMP"
 SUMMARY=${ADDR[0]}
