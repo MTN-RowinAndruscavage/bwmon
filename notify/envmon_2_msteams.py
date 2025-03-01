@@ -52,7 +52,10 @@ Mic: {sd['microphone']:.{0}f}"
 # Send hourly notifications to MS Teams
 def _main():
     while True:
-        msTeamsMsg = pymsteams.connectorcard(msteams_webhook)
+        try:
+            msTeamsMsg = pymsteams.connectorcard(msteams_webhook)
+        except Exception as e:
+            print(f"Error connecting to MSTeams: {str(e)}")
         for s in sensors:
             section = pymsteams.cardsection()
             try:
